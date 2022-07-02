@@ -28,7 +28,12 @@ export class GithubService {
     });
   }
 
-  async createReadme(repo: string): Promise<void> {
+  async createReadme(repo: string, link: string): Promise<void> {
+    const textReadme =
+      '# Challenge\nFollow the instruction on the next link: \n ```\n' +
+      link +
+      '\n```';
+
     await this.githubClient.request(
       `PUT /repos/${this.githubOrg}/${repo}/contents/README.md`,
       {
@@ -36,7 +41,7 @@ export class GithubService {
         repo,
         path: 'README.md',
         message: 'README.md',
-        content: 'VEVTVElORw==', //my new file contents
+        content: Buffer.from(textReadme).toString('base64'),
       },
     );
   }
@@ -82,5 +87,10 @@ export class GithubService {
         username,
       },
     );
+  }
+
+  async searchUser(email: string) {
+    const users = await this.githubClient.search.users({ q: email });
+    return users;
   }
 }
